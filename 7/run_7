@@ -1,0 +1,127 @@
+#!/bin/bash
+
+# Project:       CCB@CNR-IREA
+# Author:        Terradue Srl
+# Last update:   2013/10/22
+# Element:       7
+# Context:       /application/sbas
+# Name:          run
+# Version:       1.0
+# Description:   
+
+# This document is the property of Terradue and contains information directly 
+# resulting from knowledge and experience of Terradue.
+# Any changes to this code is forbidden without written consent from Terradue Srl
+ 
+# Contact: info@terradue.com
+
+BASE_DIR=$_CIOP_APPLICATION_PATH/sbas
+export PATH=$BASE_DIR:$PATH
+export PATH=/usr/local/bin:$PATH
+
+# Load CIOP include
+source ${ciop_job_include}
+
+# Load common functions, error and variables
+source $BASE_DIR/wf/common/conf
+source $BASE_DIR/wf/common/functions
+source $BASE_DIR/wf/common/error
+
+# Permits complete debug information
+ciop-enable-debug true
+
+# Trap an exit signal to exit properly
+trap cleanExit EXIT
+
+# Test that all required binaries are accessible
+IDL=`which idl`
+[ -z $IDL ] && exit $NO_IDL
+
+
+###########################################################
+#                   Job Configuration                     #                                      
+###########################################################
+
+job_name="7"
+
+
+###########################################################
+#                          Job Run                        #                                      
+###########################################################
+
+OUTPUT_DIR=$GENERAL_DIR/$_WF_ID
+
+
+#creo la directory degli INPUT e OUTPUT
+mkdir -p $OUTPUT_DIR/INPUT_OUTPUT/7
+
+
+count=0
+
+while read input
+do
+
+	TMP=/tmp/$_WF_ID/tmp/$job_name/$_JOB_ID/$_TASK_ID/$count
+#	CURR_DATE=`echo $input | sed 's/.*\/SLC\/\([0-9]*\)$/\1/g'`
+
+	mkdir -p $TMP
+
+        task_paramfilename=""
+        task_paramfile=""
+
+        generate_paramFile
+
+
+	INDEX_ACQ=`echo $input | sed 's/.*_//g'`
+
+
+	# Setup paramfile
+        #setup_idl_param_file INDEX_ACQ $INDEX_ACQ str $task_paramfile
+	setup_idl_param_file INDEX_BURST $INDEX_ACQ str $task_paramfile
+
+	###########################
+        # IDL processing step "7" #
+        ###########################
+
+        step="7"
+
+	ciop-log "INFO" "Starting step ($step)..."
+	
+	prepare_idl_input $OUTPUT_DIR $task_paramfilename $step "q" >$TMP/input_idl_$step
+        idl -rt="$IDL_EXECUTABLE" < $TMP/input_idl_$step 2>&1 | tee $TMP/output_idl_$step | sed "s/'/\\\'/" | xargs -I {} bash -c 'ciop-log "INFO" "{}"'
+	check_idl_error $TMP/output_idl_$step
+
+
+	###################
+        # Publish results #
+        ###################
+ 
+	# Use ciop-publish to pass out put in /nfs to next job
+#	ciop-publish $OUTPUT_DIR
+
+
+
+	# Clean up the local temporary directory for next loops
+#  ELIMINATO DA CLD        [ "$CLEAN_UP" == "y"  ] && rm -Rf $TMP
+
+mv $TMP/output_idl_$step $OUTPUT_DIR/INPUT_OUTPUT/7/output_idl_$step$_TASK_ID$count
+mv $TMP/input_idl_$step $OUTPUT_DIR/INPUT_OUTPUT/7/input_idl_$step$_TASK_ID$count
+
+	let "count += 1"
+done
+
+
+
+j=-1
+for i in `cat $OUTPUT_DIR/LOG/currPairs.txt`; do j=$((j+1)); echo $j >> $OUTPUT_DIR/LOG/currPairs_CIOP.txt; done
+echo "$OUTPUT_DIR/LOG/currPairs_CIOP.txt" ciop-publish -s
+
+#oppure
+#for i in `cat $OUTPUT_DIR/LOG/currPairs.txt`; do 
+#    j=$((j+1))
+#    ciop-publish $j
+#done
+#__________________________________________________________________________________________
+
+
+exit 0

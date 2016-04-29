@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# Project:       CCB@CNR-IREA
+# Author:        Terradue Srl
+# Last update:   2013/09/06
+# Element:       env
+# Context:       /application/sbas
+# Name:          run
+# Version:       1.0
+# Description:   Common functions for SBAS jobs 
+
+# This document is the property of Terradue and contains information directly 
+# resulting from knowledge and experience of Terradue.
+# Any changes to this code is forbidden without written consent from Terradue Srl
+
+# Contact: info@terradue.com
+
+
+function setup_idl_param_file() {
+
+        local name=$1
+        local value=$2
+        local type=$3
+        local paramfile=$4
+
+        sed -i -e "s#\$$name:[\/_#0-9a-zA-Z].*:$type#\$$name:$value:$type#g" $paramfile
+
+        return $?
+}
+
+function prepare_idl_input() {
+	
+	for parameter in "$@"
+	do
+    		echo "$parameter"
+	done
+}
+
+function check_idl_error() {
+
+	local error1=`cat $1 | grep IDLRTMAIN`
+	local error2=`cat $1 | grep "Stop encountered"`
+	local msg=$2
+        
+	[ -n "$error1" ] || [ -n "$error2" ] && {
+
+                ciop-log "ERROR" "IDL Data Deformatting failed" "IDL"
+                
+		[ -n "$msg" ] && {
+			ciop-log "ERROR" "$msg" "IDL"	
+		}
+	
+		ciop-publish -r $error1 $error2
+                exit $ERR_IDL
+        }
+}
+
+function aggregate_paramFiles() {
+
+	local first=0
+	for paramfile in $( ls $OUTPUT_DIR | grep "paramFile.txt_" ); do
+        	if [ $first = 0 ]; then
+                	mv $OUTPUT_DIR/$paramfile $OUTPUT_DIR/paramFile.txt
+                	first=1
+        	else
+                	rm -f $OUTPUT_DIR/$paramfile
+        	fi
+	done
+}
+
+function generate_paramFile() {
+	
+	random=`od -vAn -N4 -tu4 /dev/urandom | tr -d ' '`
+	
+	prefix=$PARAMFILENAME
+ 
+        task_paramfilename=$prefix"_"$random
+	task_paramfile=$OUTPUT_DIR/$task_paramfilename
+
+	cp $OUTPUT_DIR/$prefix $task_paramfile	
+}

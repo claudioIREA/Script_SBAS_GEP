@@ -1,0 +1,136 @@
+#!/bin/bash
+
+# Project:      
+# Author:        CNR-IREA
+# Last update:   
+# Element:       ij
+# Context:       /application/sbas
+# Name:          run
+# Version:       1.0
+# Description:   
+
+
+# Contact: sbas-help@irea.cnr.it
+
+BASE_DIR=$_CIOP_APPLICATION_PATH/sbas
+export PATH=$BASE_DIR:$PATH
+export PATH=/usr/local/bin:$PATH
+
+# Load CIOP include
+source ${ciop_job_include}
+
+# Load common functions, error and variables
+source $BASE_DIR/wf/common/conf
+source $BASE_DIR/wf/common/functions
+source $BASE_DIR/wf/common/error
+
+# Permits complete debug information
+ciop-enable-debug true
+
+# Trap an exit signal to exit properly
+trap cleanExit EXIT
+
+# Test that all required binaries are accessible
+IDL=`which idl`
+[ -z $IDL ] && exit $NO_IDL
+
+
+###########################################################
+#                   Job Configuration                     #                                      
+###########################################################
+
+job_name="ij"
+
+# Orbit parameters
+VIDEO_PLOT=`ciop-getparam "videoPlot"`
+LATCM=`ciop-getparam "latCm"`
+LONCM=`ciop-getparam "lonCm"`
+#ORBIT_TYPE=`ciop-getparam "orbitType"`
+
+# Orbit dirs
+S1A_ORB_PREC_DIR="OrbPrec"
+S1A_ORB_RES_DIR="OrbRes"
+
+###########################################################
+#                          Job Run                        #                                      
+###########################################################
+
+DATA_ORBIT=/tmp/$_WF_ID/aux   
+OUTPUT_DIR=$GENERAL_DIR/$_WF_ID
+
+#creo la directory degli INPUT e OUTPUT
+mkdir -p $OUTPUT_DIR/INPUT_OUTPUT/ij
+
+
+# Copying orbit directories
+if [ ! -f "$DATA_ORBIT" ]
+then
+
+	ciop-copy -c -O $DATA_ORBIT $AUX_DIR/$S1A_ORB_PREC_DIR >&2
+	ciop-copy -c -O $DATA_ORBIT $AUX_DIR/$S1A_ORB_RES_DIR >&2
+
+
+fi
+
+count=0
+
+while read input
+do
+
+	TMP=/tmp/$_WF_ID/tmp/$job_name/$_JOB_ID/$_TASK_ID/$count
+	DATA_INPUT=/tmp/$_WF_ID/input/$job_name/$_JOB_ID/$_TASK_ID/$count
+
+	mkdir -p $TMP $DATA_INPUT
+
+	[ ! -f "$OUTPUT_DIR/$PARAMFILENAME" ] && ciop-copy -c -f -O $OUTPUT_DIR $PARAMFILE >&2
+
+	# Copying (linking) input data files    
+        ciop-copy -c -O $DATA_INPUT $input >&2
+        
+	# Generate paramfile (copying a task local copy of the paramfile)
+	task_paramfilename=""
+	task_paramfile=""
+	
+	generate_paramFile
+	
+	# Setup paramfile
+        setup_idl_param_file VIDEO_PLOT $VIDEO_PLOT int $task_paramfile
+        setup_idl_param_file LATCM $LATCM dbl $task_paramfile
+        setup_idl_param_file LONCM $LONCM dbl $task_paramfile
+	setup_idl_param_file DATA $DATA_INPUT str $task_paramfile
+	setup_idl_param_file ORBIT_HOME_SNT_PREC $DATA_ORBIT/$S1A_ORB_PREC_DIR str $task_paramfile
+	setup_idl_param_file ORBIT_HOME_SNT_RES $DATA_ORBIT/$S1A_ORB_RES_DIR str $task_paramfile
+
+
+	#############################
+	# IDL processing step "i j" #
+	#############################
+
+	for i in i j
+	do
+        	step="$i"
+
+        	ciop-log "INFO" "Starting step ($step)..."
+
+        	prepare_idl_input $OUTPUT_DIR $task_paramfilename $step "q" >$TMP/input_idl_$step
+        	idl -rt="$IDL_EXECUTABLE" < $TMP/input_idl_$step 2>&1 | tee $TMP/output_idl_$step | sed "s/'/\\\'/" | xargs -I {} bash -c 'ciop-log "INFO" "{}"'
+        	check_idl_error $TMP/output_idl_$step "Error step $step"
+	done
+
+	###################
+	# Publish results #
+	###################
+	
+#	ciop-publish $OUTPUT_DIR   #da capire se serve ancora
+
+	# Clean up the local temporary directory for next loops
+#  ELIMINATO DA CLD      [ "$CLEAN_UP" == "y"  ] && rm -Rf $TMP
+
+	mv $TMP/output_idl_$step $OUTPUT_DIR/INPUT_OUTPUT/ij/output_idl_$step$count
+
+
+
+	let "count += 1"
+done
+
+exit 0

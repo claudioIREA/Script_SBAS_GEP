@@ -1,0 +1,90 @@
+#!/bin/bash
+
+# Project:       CCB@CNR-IREA
+# Author:        Terradue Srl
+# Last update:   2013/09/06
+# Element:       env
+# Context:       /application/sbas
+# Name:          run
+# Version:       1.0
+# Description:   Common functions and variables for SBAS jobs 
+
+# This document is the property of Terradue and contains information directly 
+# resulting from knowledge and experience of Terradue.
+# Any changes to this code is forbidden without written consent from Terradue Srl
+
+# Contact: info@terradue.com
+
+# Error codes
+SUCCESS=0
+ERR_BADVOLCANODB=1
+ERR_BADARG=2
+NO_IDL=3
+NO_XSLTPROC=4
+NO_ZIP=5
+NO_BINCALC=6
+NO_WARPBIN=7
+NO_GEOBOXAWK=8
+NO_KMLXSLT=9
+ERR_NOLDDCMD=10
+ERR_NOFILECMD=11
+ERR_MISSINGLIBS=12
+ERR_IMAGERPROCFILE=13
+ERR_IMAGERPARAMFILE=14
+ERR_IMAGERBIN=15
+ERR_XSLTPROCBIN=16
+ERR_NOXSL=17
+ERR_NOINPUT=18
+ERR_NOOUTPUT=19
+DEBUG_EXIT=66
+
+
+function cleanExit ()
+{
+   local retval=$?
+   local msg=""
+   case "$retval" in
+   	$SUCCESS)
+      		msg="Processing successfully concluded";;
+        $NO_IDL)
+                msg="No idl binary found in path ($PATH)";;
+        $NO_XSLTPROC)
+                msg="No xsltproc binary found in path ($PATH)";;
+        $NO_ZIP)
+                msg="No zip binary found in path ($PATH)";;
+        $NO_BINCALC)
+                msg="No bc binary found in path ($PATH)";;
+        $NO_WARPBIN)
+                msg="No warpimage binary found in path ($PATH)";;
+        $NO_GEOBOXAWK)
+                msg="awk script geobox.awk found in path ($PATH)";;
+   	$ERR_BADARG)
+      		msg="function checklibs called with non-directory parameter, returning $res";;
+   	$ERR_NOLDDCMD)
+      		msg="binary ldd not found in path, returning $res";;
+   	$ERR_NOFILECMD)
+      		msg="binary 'file' command not found in path, returning $res";;
+  	$ERR_MISSINGLIBS)
+      		msg="libraries not found, returning $res";;
+        $ERR_IMAGERPROCFILE)
+                msg="File $DIR/vomir.proc missing or empty";;
+        $ERR_IMAGERPARAMFILE)
+                msg="File $DIR/proc_params.txt missing or empty";;
+        $ERR_IMAGERBIN)
+                msg="imagerpp failed";;
+        $ERR_XSLTPROCBIN)
+                msg="xsltproc failed";;
+        $ERR_NOXSL)
+                msg="No xsl stylesheet found";;
+        $ERR_NOINPUT)
+                msg="Unable to retrieve an input file";;
+        $ERR_NOOUTPUT)
+                msg="No output results";;
+   	$DEBUG_EXIT)
+      		msg="Breaking at debug exit";;
+   	*)
+      	msg="Unknown error";;
+   esac
+   [ "$retval" != 0 ] && ciop-log "ERROR" "Error $retval - $msg, processing aborted" || ciop-log "INFO" "$msg"
+   exit "$retval"
+}

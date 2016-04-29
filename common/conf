@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Project:       CCB@CNR-IREA
+# Author:        Terradue Srl
+# Last update:   2013/09/20
+# Element:       common
+# Context:       /application/sbas
+# Name:          conf
+# Version:       1.0
+# Description:   
+
+# This document is the property of Terradue and contains information directly 
+# resulting from knowledge and experience of Terradue.
+# Any changes to this code is forbidden without written consent from Terradue Srl
+
+# Contact: info@terradue.com
+
+###########################################################
+#                    Job Configuration                    #                                      
+###########################################################
+
+BASE_DIR=$_CIOP_APPLICATION_PATH/sbas
+export PATH=$BASE_DIR:$PATH
+export PATH=/usr/local/bin:$PATH
+
+## Input/Output folders
+GENERAL_DIR=/nfs/CIOP
+mkdir -p $GENERAL_DIR
+
+AUX_DIR=/application/sbas/aux
+
+## IDL
+PARAMFILENAME=paramFile.txt
+PARAMFILE="file:///$BASE_DIR/idl/$PARAMFILENAME"
+IDL_EXECUTABLE=$BASE_DIR/idl/creaciop.sav
+IDL_EXECUTABLE_BBOX=$BASE_DIR/idl/BoundingBox.sav
+
+export LM_LICENSE_FILE=1700@jupiter.irea.cnr.it
+# Patch: to avoid the message 'unable to create directory: /usr/lib/hadoop-0.20/.idl'
+export HOME=/tmp
+
+# Contains the catalogue location (used by ciop-catquery, for example)
+export _CIOP_CQI_LOCATION=http://vm-10-10-19-38.dev.irea.cnr.local/catalogue/sandbox
+
+## Control variables
+CLEAN_UP="n" # Set to "y" to clean up intermediate input/output log files

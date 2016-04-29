@@ -1,0 +1,83 @@
+#!/bin/bash
+
+
+
+BASE_DIR=$_CIOP_APPLICATION_PATH/sbas  #bisogna vedere come chiamarla
+export PATH=$BASE_DIR:$PATH
+export PATH=/usr/local/bin:$PATH
+
+# Load CIOP include
+source ${ciop_job_include}
+
+# Load common functions, error and variables
+source $BASE_DIR/wf/common/conf
+source $BASE_DIR/wf/common/functions
+source $BASE_DIR/wf/common/error
+
+# Permits complete debug information
+ciop-enable-debug true
+
+# Trap an exit signal to exit properly
+trap cleanExit EXIT
+
+# Test that all required binaries are accessible
+IDL=`which idl`
+[ -z $IDL ] && exit $NO_IDL
+
+
+###########################################################
+#                   Job Configuration                     #                                      
+###########################################################
+
+job_name="01"
+
+###########################################################
+#                          Job Run                        #                                      
+###########################################################
+
+OUTPUT_DIR=$GENERAL_DIR/$_WF_ID
+TMP=/tmp/$_WF_ID/tmp/$job_name/$_JOB_ID/$_TASK_ID
+
+mkdir -p $TMP
+
+# Aggregate paramfiles (uses the first)
+aggregate_paramFiles
+
+task_paramfilename="paramFile.txt"
+task_paramfile=$OUTPUT_DIR/$task_paramfilename
+
+setup_idl_param_file PATHGEN $OUTPUT_DIR str $task_paramfile
+
+
+#creo la directory degli INPUT e OUTPUT
+mkdir -p $OUTPUT_DIR/INPUT_OUTPUT/01
+
+
+###############################
+# IDL processing step "0 1" #
+###############################
+
+for i in 0 1
+do
+        step="$i"
+
+        ciop-log "INFO" "Starting step ($step)..."
+
+        prepare_idl_input $OUTPUT_DIR $task_paramfilename $step "q" >$TMP/input_idl_$step
+        idl -rt="$IDL_EXECUTABLE" < $TMP/input_idl_$step 2>&1 | tee $TMP/output_idl_$step | sed "s/'/\\\'/" | xargs -I {} bash -c 'ciop-log "INFO" "{}"'
+        check_idl_error $TMP/output_idl_$step "Error step $step"
+done
+
+###################
+# Publish results #
+###################
+
+#  ELIMINATO DA CLD   ciop-publish -r $OUTPUT_DIR | egrep '.*\/SLC\/[0-9]*$' #devo capire se serve ancora
+
+# Clean up intermediate input/output files
+#  ELIMINATO DA CLD    [ $CLEAN_UP == "y"  ] && rm -Rf $TMP
+
+mv $TMP/output_idl_$step $OUTPUT_DIR/INPUT_OUTPUT/01/output_idl_$step
+mv $TMP/input_idl_$step $OUTPUT_DIR/INPUT_OUTPUT/01/input_idl_$step
+
+exit 0

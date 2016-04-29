@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application id="sbas">
+	<jobTemplates>
+		<jobTemplate id="ij">
+		        <streamingExecutable>/application/sbas/wf/ij/run_ij</streamingExecutable>
+			<defaultParameters>
+				<parameter id="latCm"></parameter>
+				<parameter id="lonCm"></parameter>
+				<parameter id="videoPlot"></parameter>
+			</defaultParameters>
+			<defaultJobconf>
+		        	<property id="ciop.job.max.tasks">8</property>
+		        </defaultJobconf>
+		</jobTemplate>
+
+		<jobTemplate id="01">
+			<streamingExecutable>/application/sbas/wf/01/run_01</streamingExecutable>
+			<defaultJobconf>
+		        	<property id="ciop.job.max.tasks">1</property>
+		        	<property id="mapred.task.timeout">36000000</property>
+		        </defaultJobconf>
+		</jobTemplate>
+
+		<jobTemplate id="6">
+			<streamingExecutable>/application/sbas/wf/6/run_6</streamingExecutable>
+		        <defaultJobconf>
+		               	<property id="ciop.job.max.tasks">1</property>
+		        	<property id="mapred.task.timeout">36000000</property>
+		        </defaultJobconf>
+		</jobTemplate>
+
+		<jobTemplate id="6b">
+			<streamingExecutable>/application/sbas/wf/6b/run_6b</streamingExecutable>
+			<defaultJobconf>
+		        	<property id="ciop.job.max.tasks">8</property>
+		        	<property id="mapred.task.timeout">36000000</property>
+		        </defaultJobconf>
+		</jobTemplate>
+
+	        <jobTemplate id="6c">
+	        	<streamingExecutable>/application/sbas/wf/6c/run_6c</streamingExecutable>
+			<defaultParameters>
+				<parameter id="videoPlot"></parameter>
+			</defaultParameters>
+			<defaultJobconf>
+				<property id="ciop.job.max.tasks">8</property>
+				<property id="mapred.task.timeout">108000000000</property>
+			</defaultJobconf>
+		</jobTemplate>
+
+                <jobTemplate id="7">
+                        <streamingExecutable>/application/sbas/wf/7/run_7</streamingExecutable>
+                        <defaultJobconf>
+                                 <property id="ciop.job.max.tasks">8</property>
+                                 <property id="mapred.task.timeout">36000000000000</property>
+                        </defaultJobconf>
+                </jobTemplate>
+
+                <jobTemplate id="9a">
+                        <streamingExecutable>/application/sbas/wf/9a/run_9a</streamingExecutable>
+                        <defaultJobconf>
+                                 <property id="ciop.job.max.tasks">8</property>
+                                 <property id="mapred.task.timeout">10800000000000</property>
+                        </defaultJobconf>
+                </jobTemplate>
+
+		<jobTemplate id="9b">
+			<streamingExecutable>/application/sbas/wf/9b/run_9b</streamingExecutable>
+			<defaultJobconf>
+		        	<property id="ciop.job.max.tasks">1</property>
+		        	<property id="mapred.task.timeout">108000000000000</property>
+		        </defaultJobconf>
+		</jobTemplate>
+
+                <jobTemplate id="9c">
+                        <streamingExecutable>/application/sbas/wf/9c/run_9c</streamingExecutable>
+                        <defaultJobconf>
+                                 <property id="ciop.job.max.tasks">8</property>
+                                 <property id="mapred.task.timeout">10800000000000</property>
+                        </defaultJobconf>
+                </jobTemplate>
+
+                <jobTemplate id="11">
+                        <streamingExecutable>/application/sbas/wf/11/run_11</streamingExecutable>
+                        <defaultJobconf>
+                                 <property id="ciop.job.max.tasks">1</property>
+                                 <property id="mapred.task.timeout">10800000000000</property>
+                        </defaultJobconf>
+                </jobTemplate>
+
+                <jobTemplate id="12">
+                        <streamingExecutable>/application/sbas/wf/12/run_12</streamingExecutable>
+                        <defaultJobconf>
+                                 <property id="ciop.job.max.tasks">8</property>
+                                 <property id="mapred.task.timeout">10800000000000</property>
+                        </defaultJobconf>
+                </jobTemplate>
+
+                <jobTemplate id="12a">
+                        <streamingExecutable>/application/sbas/wf/12a/run_12a</streamingExecutable>
+                        <defaultJobconf>
+                                 <property id="ciop.job.max.tasks">8</property>
+                                 <property id="mapred.task.timeout">10800000000000</property>
+                        </defaultJobconf>
+                </jobTemplate>
+
+                <jobTemplate id="12b">
+                        <streamingExecutable>/application/sbas/wf/12b/run_12b</streamingExecutable>
+                        <defaultJobconf>
+                                 <property id="ciop.job.max.tasks">8</property>
+                                 <property id="mapred.task.timeout">10800000000000</property>
+                        </defaultJobconf>
+                </jobTemplate>
+
+                <jobTemplate id="12c">
+                        <streamingExecutable>/application/sbas/wf/12c/run_12c</streamingExecutable>
+                        <defaultJobconf>
+                                 <property id="ciop.job.max.tasks">8</property>
+                                 <property id="mapred.task.timeout">10800000000000</property>
+                        </defaultJobconf>
+                </jobTemplate>
+
+                <jobTemplate id="12d">
+                        <streamingExecutable>/application/sbas/wf/12d/run_12d</streamingExecutable>
+                        <defaultJobconf>
+                                 <property id="ciop.job.max.tasks">8</property>
+                                 <property id="mapred.task.timeout">10800000000000</property>
+                        </defaultJobconf>
+                </jobTemplate>
+
+                <jobTemplate id="12e">
+                        <streamingExecutable>/application/sbas/wf/12e/run_12e</streamingExecutable>
+                        <defaultJobconf>
+                                 <property id="ciop.job.max.tasks">8</property>
+                                 <property id="mapred.task.timeout">10800000000000</property>
+                        </defaultJobconf>
+                </jobTemplate>
+
+                <jobTemplate id="12f">
+                        <streamingExecutable>/application/sbas/wf/12f/run_12f</streamingExecutable>
+                        <defaultJobconf>
+                                 <property id="ciop.job.max.tasks">8</property>
+                                 <property id="mapred.task.timeout">10800000000000</property>
+                        </defaultJobconf>
+                </jobTemplate>
+
+                <jobTemplate id="12g">
+                        <streamingExecutable>/application/sbas/wf/12g/run_12g</streamingExecutable>
+                        <defaultJobconf>
+                                 <property id="ciop.job.max.tasks">8</property>
+                                 <property id="mapred.task.timeout">10800000000000</property>
+                        </defaultJobconf>
+                </jobTemplate>
+
+                <jobTemplate id="aggregator">
+                        <streamingExecutable>/application/sbas/wf/common/aggregator</streamingExecutable>
+                        <defaultJobconf>
+                                 <property id="ciop.job.max.tasks">1</property>
+                        </defaultJobconf>
+                </jobTemplate>
+	</jobTemplates>
+	<workflow id="sbas">
+		<workflowVersion>1.0</workflowVersion>
+		<node id="node_ij">
+		        <job id="ij"></job>
+                        <sources>
+                        	<source refid="file:urls">/application/sbas/sources/list</source>
+                        </sources>
+			<parameters>
+				<parameter id="latCm"></parameter>
+				<parameter id="lonCm"></parameter>
+				<parameter id="videoPlot">0</parameter>
+			</parameters>
+		</node>
+		<node id="node_0">
+		        <job id="0"></job>
+                        <sources>
+                        	<source refid="wf:node">node_ij</source>
+			</sources>
+		</node>
+		<node id="node_1">
+		        <job id="1"></job>
+                        <sources>
+                        	<source refid="wf:node">node_0</source>
+			</sources>
+		</node>
+		<node id="node_6">
+		        <job id="6"></job>
+		        <sources>
+                        	<source refid="wf:node">node_1</source>
+			</sources>
+		</node>
+		<node id="node_6b">
+		        <job id="6b"></job>
+                        <sources>
+                        	<source refid="wf:node">node_6</source>
+			</sources>
+		</node>
+                <node id="node_6c">
+                        <job id="6c"></job>
+                        <sources>
+                                <source refid="wf:node">node_6b</source>
+                        </sources>
+                </node>
+                <node id="node_7">
+                        <job id="7"></job>
+                        <sources>
+                                <source refid="wf:node">node_6c</source>
+                        </sources>
+                </node>
+                <node id="node_9a">
+                        <job id="9a"></job>
+                        <sources>
+                                <source refid="wf:node">node_7</source>
+                        </sources>
+                </node>
+                <node id="node_9b">
+                        <job id="9b"></job>
+                        <sources>
+                                <source refid="wf:node">node_9a</source>
+                        </sources>
+                </node>
+		<node id="node_9c">
+		        <job id="9c"></job>
+                        <sources>
+                        	<source refid="wf:node">node_9b</source>
+			</sources>		
+		</node>
+		<node id="node_11">
+		        <job id="11"></job>
+                        <sources>
+                        	<source refid="wf:node">node_9c</source>
+			</sources>
+		</node>
+		<node id="node_12">
+		        <job id="12"></job>
+                        <sources>
+                        	<source refid="wf:node">node_11</source>
+			</sources>
+<!--			<parameters>
+				<parameter id="flagHamm">n</parameter>
+				<parameter id="filtWeight">0.5</parameter>
+				<parameter id="low">1</parameter>
+			</parameters>
+-->		</node>
+		<node id="node_12a">
+		        <job id="12a"></job>
+                        <sources>
+                        	<source refid="wf:node">node_12</source>
+			</sources>
+		</node>
+                <node id="node_12b">
+                        <job id="12b"></job>
+                        <sources>
+                                <source refid="wf:node">node_12a</source>
+                        </sources>
+                </node>
+                <node id="node_12c">
+                        <job id="12c"></job>
+                        <sources>
+                                <source refid="wf:node">node_12b</source>
+                        </sources>
+                </node>
+                <node id="node_12d">
+                        <job id="12d"></job>
+                        <sources>
+                                <source refid="wf:node">node_12c</source>
+                        </sources>
+                </node>
+                <node id="node_12e">
+                        <job id="12e"></job>
+                        <sources>
+                                <source refid="wf:node">node_12d</source>
+                        </sources>
+                </node>
+                <node id="node_12f">
+                        <job id="12f"></job>
+                        <sources>
+                                <source refid="wf:node">node_12e</source>
+                        </sources>
+                </node>
+                <node id="node_12g">
+                        <job id="12g"></job>
+                        <sources>
+                                <source refid="wf:node">node_12f</source>
+                        </sources>
+                </node>
+	</workflow>
+</application>

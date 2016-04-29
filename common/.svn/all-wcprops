@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/repo/!svn/ver/30290/products/air/trunk/applications/sbas/trunk/wf/common
+END
+aggregator
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/repo/!svn/ver/30719/products/air/trunk/applications/sbas/trunk/wf/common/aggregator
+END
+conf
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/repo/!svn/ver/30316/products/air/trunk/applications/sbas/trunk/wf/common/conf
+END
+functions
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repo/!svn/ver/30407/products/air/trunk/applications/sbas/trunk/wf/common/functions
+END
+error
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/repo/!svn/ver/29636/products/air/trunk/applications/sbas/trunk/wf/common/error
+END

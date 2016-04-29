@@ -1,0 +1,125 @@
+#!/bin/bash
+
+# Project:       
+# Author:        CNR-IREA
+# Last update:   
+# Element:       6c
+# Context:       /application/sbas
+# Name:          run
+# Version:       1.0
+# Description:   
+
+
+# Contact: sbas-help@irea.cnr.it
+
+BASE_DIR=$_CIOP_APPLICATION_PATH/sbas
+export PATH=$BASE_DIR:$PATH
+export PATH=/usr/local/bin:$PATH
+
+# Load CIOP include
+source ${ciop_job_include}
+
+# Load common functions, error and variables
+source $BASE_DIR/wf/common/conf
+source $BASE_DIR/wf/common/functions
+source $BASE_DIR/wf/common/error
+
+# Permits complete debug information
+ciop-enable-debug true
+
+# Trap an exit signal to exit properly
+trap cleanExit EXIT
+
+# Test that all required binaries are accessible
+IDL=`which idl`
+[ -z $IDL ] && exit $NO_IDL
+
+
+###########################################################
+#                   Job Configuration                     #                                      
+###########################################################
+
+job_name="6c"
+
+###########################################################
+#                          Job Run                        #                                      
+###########################################################
+
+OUTPUT_DIR=$GENERAL_DIR/$_WF_ID
+
+
+#creo la directory degli INPUT e OUTPUT
+mkdir -p $OUTPUT_DIR/INPUT_OUTPUT/6c
+
+
+count=0
+
+while read input
+do
+
+	TMP=/tmp/$_WF_ID/tmp/$job_name/$_JOB_ID/$_TASK_ID/$count
+
+	mkdir -p $TMP
+
+	# Generate paramfile (copying a task local copy of the paramfile)
+	task_paramfilename=""
+	task_paramfile=""
+
+	generate_paramFile
+
+ #	N_DEM_PATCH=`sed -n 's/\$N_DEM_PATCH:\(.*\):dbl/\1/p' $task_paramfile`	
+	INDEX_ACQ=`echo $input | sed 's/.*_//g'`
+
+	# Setup paramfile
+        #setup_idl_param_file INDEX_ACQ_DEM $INDEX_ACQ str $task_paramfile
+	setup_idl_param_file INDEX_BURST $INDEX_ACQ str $task_paramfile
+
+	############################
+        # IDL processing step "6c" #
+        ############################
+
+        step="6c"
+
+	ciop-log "INFO" "Starting step ($step)..."
+	
+	prepare_idl_input $OUTPUT_DIR $task_paramfilename $step "q" >$TMP/input_idl_$step
+        idl -rt="$IDL_EXECUTABLE" < $TMP/input_idl_$step 2>&1 | tee $TMP/output_idl_$step | sed "s/'/\\\'/" | xargs -I {} bash -c 'ciop-log "INFO" "{}"'
+	check_idl_error $TMP/output_idl_$step
+
+	#rm $OUTPUT_DIR/DEM/DEM_patch_$INDEX_ACQ
+
+	###################
+        # Publish results #
+        ###################
+
+
+
+ 
+	# Use ciop-publish to pass out put in /nfs to next job
+##	ciop-publish $OUTPUT_DIR       ##non so se serve
+
+
+
+
+	# Clean up the local temporary directory for next loops
+#  ELIMINATO DA CLD          [ "$CLEAN_UP" == "y"  ] && rm -Rf $TMP
+
+mv $TMP/output_idl_$step $OUTPUT_DIR/INPUT_OUTPUT/6c/output_idl_$step$_TASK_ID$count
+mv $TMP/input_idl_$step $OUTPUT_DIR/INPUT_OUTPUT/6c/input_idl_$step$_TASK_ID$count
+
+
+	let "count += 1"
+done
+
+
+#ciop-publish $OUTPUT_DIR/LOG/IndiciBurstUtili_CIOP.txt
+
+IndiciBurst=(`echo $(cat $OUTPUT_DIR/LOG/IndiciBurstUtili.txt) | tr ' ' '\n'`)
+for i in ${IndiciBurst[@]}; do echo $i >> $OUTPUT_DIR/LOG/IndiciBurstUtili_Totale_CIOP.txt; done
+echo "$OUTPUT_DIR/LOG/IndiciBurstUtili_Totale_CIOP.txt" ciop-publish -s
+
+#oppure
+#for i in ${IndiciBurst[@]}; do ciop-publish $i; done
+
+
+exit 0

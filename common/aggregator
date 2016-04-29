@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# Project:       CCB@CNR-IREA
+# Author:        Terradue Srl
+# Last update:   2013/09/18
+# Element:       aggregator
+# Context:       /application/sbas
+# Name:          run
+# Version:       1.0
+# Description:   
+
+# This document is the property of Terradue and contains information directly 
+# resulting from knowledge and experience of Terradue.
+# Any changes to this code is forbidden without written consent from Terradue Srl
+ 
+# Contact: info@terradue.com
+
+BASE_DIR=$_CIOP_APPLICATION_PATH/sbas
+export PATH=$BASE_DIR:$PATH
+export PATH=/usr/local/bin:$PATH
+
+# Load CIOP include
+source ${ciop_job_include}
+
+# Load common functions, error and variables
+source $BASE_DIR/wf/common/conf
+source $BASE_DIR/wf/common/functions
+source $BASE_DIR/wf/common/error
+
+# Permits complete debug information
+ciop-enable-debug true
+
+# Trap an exit signal to exit properly
+trap cleanExit EXIT
+
+###########################################################
+#                          Job Run                        #                                      
+###########################################################
+
+OUTPUT_DIR=$GENERAL_DIR/$_WF_ID
+
+# Aggregate paramfiles (uses the first)
+aggregate_paramFiles
+
+###################
+# Publish results #
+###################
+
+ciop-publish -r $OUTPUT_DIR | egrep '.*\/SLC\/[0-9]*$'
+
+exit 0

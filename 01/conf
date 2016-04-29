@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Project:       CCB@CNR-IREA
+# Author:        Terradue Srl
+# Last update:   2013/09/06
+# Element:       ij
+# Context:       /application/sbas
+# Name:          conf
+# Version:       1.0
+# Description:   
+
+# This document is the property of Terradue and contains information directly 
+# resulting from knowledge and experience of Terradue.
+# Any changes to this code is forbidden without written consent from Terradue Srl
+
+# Contact: info@terradue.com
+
+###########################################################
+#                    Job Configuration                    #                                      
+###########################################################
+
+# Output folder
+GENERAL_DIR=/nfs/OUTPUT_CIOP
+mkdir -p $GENERAL_DIR
+
+# IDL
+PARAMFILENAME=paramFile.txt
+PARAMFILE="file:///$BASE_DIR/idl/$PARAMFILENAME"
+IDL_EXECUTABLE=$BASE_DIR/idl/creaciop.sav
+
+export LM_LICENSE_FILE=/tmp/license.dat
+export HOME=/tmp
+
+# Job variables
+INDEX_ACQ="0"
